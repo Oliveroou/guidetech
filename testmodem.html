@@ -6,18 +6,33 @@
 <title>Assistant Diagnostic & Configuration Centre d’Appel</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; }
-  h1, h2, h3 { color: #2a6ebb; }
+  h1, h2, h3 { color: #2a6ebb; margin: 0; }
   label { display: block; margin-top: 15px; font-weight: bold; }
   select, input[type=text], textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
   button { margin-top: 15px; padding: 10px 20px; background-color: #2a6ebb; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
   button:hover { background-color: #1f4f8b; }
   pre { background: #e4ebf7; padding: 15px; border-radius: 6px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
   #routerConfig { background:#eef; padding:15px; margin-top:15px; border-radius:5px; display:none; }
+
+  /* Nouveau style pour header avec logo à droite */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  header img {
+    max-height: 60px;
+    width: auto;
+  }
 </style>
 </head>
 <body>
 
-<h1>Assistant Diagnostic & Configuration Centre d’Appel</h1>
+<header>
+  <h1>Assistant Diagnostic & Configuration Centre d’Appel</h1>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Bravo_telecom_logo.png" alt="Logo Bravo Telecom" />
+</header>
 
 <label for="clientName">Nom du client :</label>
 <input type="text" id="clientName" placeholder="Nom ou référence client" />
@@ -175,133 +190,133 @@ const procedures = {
   vpnIssue: {
     description: "Le client ne parvient pas à établir ou maintenir une connexion VPN stable.",
     causes: [
-      "Paramètres VPN incorrects ou incompatibles.",
-      "Pare-feu/antivirus bloquant le VPN.",
-      "Problèmes de réseau ou NAT sur le routeur.",
-      "Version obsolète du logiciel VPN.",
-      "Problèmes temporaires du serveur VPN."
+      "Configuration VPN incorrecte sur le routeur ou client.",
+      "Ports VPN bloqués par firewall ou opérateur.",
+      "Problèmes de DNS ou routage.",
+      "Firmware routeur obsolète ou bugs.",
+      "Problèmes liés au serveur VPN distant."
     ],
     steps: [
-      "Vérifier les paramètres VPN (serveur, protocole, identifiants).",
-      "Désactiver temporairement le pare-feu/antivirus pour tester.",
-      "Tester la connexion VPN sur un autre appareil si possible.",
-      "Vérifier la stabilité de la connexion Internet.",
-      "Mettre à jour le logiciel VPN ou utiliser une autre version."
+      "Vérifier les paramètres VPN sur routeur et client.",
+      "Tester connexion VPN via un autre réseau.",
+      "Redémarrer matériel réseau.",
+      "Mettre à jour firmware routeur.",
+      "Vérifier les logs VPN pour erreurs spécifiques."
     ],
     solutions: [
-      "Corriger les paramètres VPN.",
-      "Contacter le support VPN si problème persiste.",
-      "Changer de logiciel VPN si incompatibilité détectée.",
-      "Escalader pour assistance technique avancée."
+      "Reconfigurer VPN avec les bons paramètres.",
+      "Ouvrir les ports nécessaires sur firewall/routeur.",
+      "Escalader vers support VPN si problème serveur.",
+      "Mettre à jour ou remplacer le matériel si nécessaire."
     ]
   },
   voipIssue: {
-    description: "Le client rencontre des problèmes avec son téléphone résidentiel VoIP (absence de tonalité, mauvaise qualité audio, coupures).",
+    description: "Le client a des problèmes avec son téléphone résidentiel VoIP (pas de tonalité, mauvaise qualité audio, coupures).",
     causes: [
-      "Connexion Internet instable ou insuffisante.",
-      "Problème de configuration du téléphone IP ou adaptateur.",
-      "Câbles ou matériel défectueux.",
-      "Interférences réseau ou conflit d’adresses IP."
+      "Problèmes de QoS sur le réseau local.",
+      "Câblage défectueux ou port LAN incorrect.",
+      "Problèmes de configuration SIP.",
+      "Firmware du routeur obsolète.",
+      "Problèmes avec le fournisseur VoIP."
     ],
     steps: [
-      "Vérifier que le téléphone est correctement branché et alimenté.",
-      "Redémarrer le modem, routeur et téléphone IP.",
-      "Tester la connexion Internet pour vérifier la stabilité.",
-      "Contrôler les câbles réseau et téléphoniques.",
-      "Vérifier la configuration du téléphone IP (serveur SIP, comptes).",
-      "Tester la qualité audio avec un autre téléphone IP si possible."
+      "Vérifier câblage et ports LAN utilisés.",
+      "Tester qualité audio avec un autre téléphone SIP.",
+      "Redémarrer routeur et téléphone IP.",
+      "Mettre à jour firmware routeur.",
+      "Vérifier paramètres SIP et logs."
     ],
     solutions: [
-      "Remplacer câbles ou téléphone défectueux.",
-      "Reconfigurer les paramètres SIP.",
-      "Améliorer la qualité de la connexion Internet.",
-      "Escalader pour intervention technique spécialisée."
+      "Configurer QoS pour prioriser trafic VoIP.",
+      "Remplacer câbles défectueux.",
+      "Contacter fournisseur VoIP si nécessaire.",
+      "Mettre à jour ou changer matériel si problème matériel."
     ]
   }
 };
 
 const routerConfigs = {
   ac750: `
-    <h3>Configuration TP-Link AC750</h3>
-    <ul>
-      <li>Accès à l’interface : <code>http://192.168.0.1</code> ou <code>http://tplinkwifi.net</code></li>
-      <li>Identifiant/Mot de passe par défaut : <code>admin</code> / <code>admin</code></li>
-      <li>Configurer la connexion WAN (PPPoE, DHCP selon opérateur)</li>
-      <li>Configurer le Wi-Fi : SSID & mot de passe sur 2.4 GHz et 5 GHz</li>
-      <li>Modifier le canal Wi-Fi sous "Wireless Settings" pour réduire les interférences</li>
-      <li>Activer QoS pour prioriser VoIP ou IPTV (si disponible)</li>
-      <li>Penser à sauvegarder la configuration et redémarrer le routeur</li>
-    </ul>
-  `,
+<h3>Configuration rapide TP-Link AC750 :</h3>
+<ul>
+  <li>Adresse IP par défaut : 192.168.0.1</li>
+  <li>Identifiant / mot de passe : admin / admin</li>
+  <li>Changer canal Wi-Fi sous "Wireless Settings"</li>
+  <li>Mettre à jour firmware via "System Tools > Firmware Upgrade"</li>
+  <li>Activer QoS pour prioriser IPTV et VoIP</li>
+</ul>`,
   decoM4: `
-    <h3>Configuration TP-Link Deco M4</h3>
-    <ul>
-      <li>La gestion se fait via l’application mobile Deco</li>
-      <li>Vérifier que la dernière version de l’application est installée</li>
-      <li>Configurer la connexion Internet dans l’app (WAN selon opérateur)</li>
-      <li>Paramétrer le Wi-Fi (nom du réseau, mot de passe)</li>
-      <li>Gérer la priorité QoS dans l’app Deco pour VoIP/IPTV</li>
-      <li>Mettre à jour le firmware depuis l’application</li>
-      <li>Redémarrer les unités Deco si problème détecté</li>
-    </ul>
-  `,
+<h3>Configuration rapide TP-Link Deco M4 :</h3>
+<ul>
+  <li>Utiliser l’application mobile Deco pour configuration</li>
+  <li>Mettre à jour firmware via l’application</li>
+  <li>Activer le mode Bridge si utilisé avec autre routeur</li>
+  <li>Configurer Wi-Fi invité pour limiter accès client</li>
+</ul>`,
   ac1200: `
-    <h3>Configuration TP-Link AC1200</h3>
-    <ul>
-      <li>Accès à l’interface : <code>http://192.168.0.1</code> ou <code>http://tplinkwifi.net</code></li>
-      <li>Login par défaut : <code>admin</code> / <code>admin</code></li>
-      <li>Configurer le type de connexion WAN selon FAI (PPPoE, IP statique, DHCP)</li>
-      <li>Configurer le Wi-Fi sur les bandes 2.4 GHz et 5 GHz</li>
-      <li>Changer le canal Wi-Fi pour éviter les conflits</li>
-      <li>Activer QoS et configurer les priorités si nécessaire</li>
-      <li>Faire une sauvegarde de la configuration et redémarrer</li>
-    </ul>
-  `
+<h3>Configuration rapide TP-Link AC1200 :</h3>
+<ul>
+  <li>Adresse IP par défaut : 192.168.1.1</li>
+  <li>Login : admin / admin</li>
+  <li>Configurer les bandes 2.4 GHz et 5 GHz</li>
+  <li>Mettre à jour firmware régulièrement</li>
+  <li>Activer sécurité WPA2-PSK</li>
+</ul>`
 };
 
 function showRouterConfig() {
-  const model = document.getElementById('routerModel').value;
-  const container = document.getElementById('routerConfig');
-  if(model && routerConfigs[model]){
-    container.style.display = 'block';
-    container.innerHTML = routerConfigs[model];
+  const select = document.getElementById("routerModel");
+  const configDiv = document.getElementById("routerConfig");
+  if (select.value && routerConfigs[select.value]) {
+    configDiv.style.display = "block";
+    configDiv.innerHTML = routerConfigs[select.value];
   } else {
-    container.style.display = 'none';
-    container.innerHTML = '';
+    configDiv.style.display = "none";
+    configDiv.innerHTML = "";
   }
 }
 
 function generateSummary() {
-  const clientName = document.getElementById('clientName').value.trim();
-  const problemKey = document.getElementById('problem').value;
-  const remarks = document.getElementById('remarks').value.trim();
+  const clientName = document.getElementById("clientName").value.trim() || "Client";
+  const problemKey = document.getElementById("problem").value;
+  const remarks = document.getElementById("remarks").value.trim();
+  const routerModel = document.getElementById("routerModel").value;
 
-  if(!problemKey){
-    alert("Veuillez choisir un problème à diagnostiquer.");
+  if (!problemKey) {
+    alert("Veuillez sélectionner un problème.");
     return;
   }
 
   const diag = procedures[problemKey];
-  let text = `Client : ${clientName || 'N/A'}\n\n`;
-  text += `Problème identifié : ${diag.description}\n\n`;
-  text += `Causes possibles :\n`;
-  diag.causes.forEach((cause,i) => {
-    text += `  ${i+1}. ${cause}\n`;
-  });
-  text += `\nÉtapes de diagnostic :\n`;
-  diag.steps.forEach((step,i) => {
-    text += `  ${i+1}. ${step}\n`;
-  });
-  text += `\nSolutions recommandées :\n`;
-  diag.solutions.forEach((sol,i) => {
-    text += `  ${i+1}. ${sol}\n`;
+
+  let summaryText = `--- Diagnostic et Procédures pour ${clientName} ---\n\n`;
+
+  summaryText += `Problème sélectionné : ${diag.description}\n\n`;
+
+  summaryText += "Causes possibles :\n";
+  diag.causes.forEach((cause, i) => {
+    summaryText += `  ${i + 1}. ${cause}\n`;
   });
 
-  if(remarks){
-    text += `\nRemarques agent :\n  ${remarks}\n`;
+  summaryText += "\nÉtapes recommandées pour diagnostic :\n";
+  diag.steps.forEach((step, i) => {
+    summaryText += `  ${i + 1}. ${step}\n`;
+  });
+
+  summaryText += "\nSolutions proposées :\n";
+  diag.solutions.forEach((sol, i) => {
+    summaryText += `  ${i + 1}. ${sol}\n`;
+  });
+
+  if (remarks) {
+    summaryText += `\nRemarques complémentaires :\n${remarks}\n`;
   }
 
-  document.getElementById('summary').textContent = text;
+  if (routerModel && routerConfigs[routerModel]) {
+    summaryText += `\n\nConfiguration rapide pour le routeur sélectionné :\n${routerConfigs[routerModel].replace(/<[^>]*>?/gm, '')}`;
+  }
+
+  document.getElementById("summary").textContent = summaryText;
 }
 </script>
 
