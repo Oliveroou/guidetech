@@ -1,197 +1,309 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Script complet Centre d'Appel + Logo Ezitel</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
-      color: #222;
-    }
-    .container {
-      display: flex;
-      gap: 40px;
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      align-items: flex-start;
-    }
-    .form-container {
-      flex: 1;
-      min-width: 300px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input[type="text"], select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-    button {
-      margin-top: 20px;
-      background-color: #0078d4;
-      border: none;
-      padding: 12px 20px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #005ea2;
-    }
-    #result {
-      margin-top: 20px;
-      white-space: pre-wrap;
-      background: #eee;
-      padding: 15px;
-      border-radius: 8px;
-      font-family: monospace;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    .logo-container {
-      flex-shrink: 0;
-      max-width: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-container img {
-      max-width: 150px;
-      max-height: 150px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 4px rgba(0,0,0,0.1));
-    }
-    @media(max-width:720px) {
-      .container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .logo-container {
-        margin-top: 30px;
-        max-width: 100%;
-      }
-      .form-container {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Assistant Diagnostic & Configuration Centre d’Appel</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; }
+  h1, h2, h3 { color: #2a6ebb; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  select, input[type=text], textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc; }
+  button { margin-top: 15px; padding: 10px 20px; background-color: #2a6ebb; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+  button:hover { background-color: #1f4f8b; }
+  pre { background: #e4ebf7; padding: 15px; border-radius: 6px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; }
+  #routerConfig { background:#eef; padding:15px; margin-top:15px; border-radius:5px; display:none; }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="form-container">
-      <h2>Formulaire Diagnostic Centre d'Appel</h2>
-      <form id="callCenterForm" onsubmit="return false;">
-        <label for="agentName">Nom de l'agent :</label>
-        <input type="text" id="agentName" name="agentName" placeholder="Ex: Anass Oukharraz" required />
+<h1>Assistant Diagnostic & Configuration Centre d’Appel</h1>
 
-        <label for="callType">Type d'appel :</label>
-        <select id="callType" name="callType" required>
-          <option value="">-- Sélectionner --</option>
-          <option value="entrant">Entrant</option>
-          <option value="sortant">Sortant</option>
-          <option value="ticket">Traitement Ticket</option>
-        </select>
+<label for="clientName">Nom du client :</label>
+<input type="text" id="clientName" placeholder="Nom ou référence client" />
 
-        <label for="callDuration">Durée de l'appel (en secondes) :</label>
-        <input type="text" id="callDuration" name="callDuration" placeholder="Ex: 180" pattern="^[0-9]+$" required />
+<label for="problem">Sélectionner un problème :</label>
+<select id="problem">
+  <option value="">-- Choisir un problème --</option>
+  <option value="slowInternet">Lenteur Internet</option>
+  <option value="disconnection">Coupures fréquentes</option>
+  <option value="wifiCoverage">Problème de portée Wi-Fi</option>
+  <option value="webAccess">Impossible d'accéder à un site web</option>
+  <option value="iptvIssue">Problème IPTV</option>
+  <option value="vpnIssue">Problème VPN</option>
+  <option value="voipIssue">Problème téléphone résidentiel VoIP</option>
+</select>
 
-        <label for="callOutcome">Résultat de l'appel :</label>
-        <select id="callOutcome" name="callOutcome" required>
-          <option value="">-- Sélectionner --</option>
-          <option value="réussi">Réussi</option>
-          <option value="nonRéussi">Non réussi</option>
-          <option value="ticketCréé">Ticket créé</option>
-        </select>
+<label for="remarks">Remarques supplémentaires (optionnel) :</label>
+<textarea id="remarks" rows="4" placeholder="Ajouter des informations complémentaires ici..."></textarea>
 
-        <label for="comments">Commentaires :</label>
-        <textarea id="comments" name="comments" placeholder="Ajouter des notes ici..."></textarea>
+<label for="routerModel">Modèle de routeur (optionnel) :</label>
+<select id="routerModel" onchange="showRouterConfig()">
+  <option value="">-- Choisir un modèle --</option>
+  <option value="ac750">TP-Link AC750</option>
+  <option value="decoM4">TP-Link Deco M4</option>
+  <option value="ac1200">TP-Link AC1200</option>
+</select>
 
-        <button type="button" onclick="generateReport()">Générer rapport</button>
-      </form>
+<div id="routerConfig"></div>
 
-      <pre id="result" aria-live="polite" aria-atomic="true"></pre>
-    </div>
+<button onclick="generateSummary()">Générer résumé détaillé</button>
 
-    <div class="logo-container" aria-label="Logo Ezitel">
-      <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHcDy3awgzs0g/company-logo_200_200/company-logo_200_200/0/1704207024109/ezitel_logo?e=2147483647&v=beta&t=B9KTE0UjPwFITsI-vP-wlCFV6JaAoWPSR1IhLJVKHgw" alt="Logo Ezitel" />
-    </div>
-  </div>
+<h2>Résumé diagnostic & procédures</h2>
+<pre id="summary"></pre>
 
-  <script>
-    function generateReport() {
-      const agentName = document.getElementById("agentName").value.trim();
-      const callType = document.getElementById("callType").value;
-      const callDuration = document.getElementById("callDuration").value.trim();
-      const callOutcome = document.getElementById("callOutcome").value;
-      const comments = document.getElementById("comments").value.trim();
+<script>
+const procedures = {
+  slowInternet: {
+    description: "Le client subit une lenteur notable de sa connexion Internet, affectant la navigation et les services en ligne.",
+    causes: [
+      "Saturation du réseau local ou de la ligne Internet.",
+      "Nombre important d’appareils connectés en simultané.",
+      "Interférences Wi-Fi ou mauvais canal utilisé.",
+      "Problèmes avec le modem ou routeur (firmware obsolète, surchauffe).",
+      "Limitations du fournisseur d'accès (throttling)."
+    ],
+    steps: [
+      "Vérifier la vitesse via un test en filaire (Ethernet).",
+      "Redémarrer modem/routeur et appareils clients.",
+      "Contrôler le nombre d’appareils connectés au réseau.",
+      "Changer le canal Wi-Fi pour réduire les interférences.",
+      "Mettre à jour le firmware du modem/routeur.",
+      "Vérifier la qualité du câble coaxial ou DSL."
+    ],
+    solutions: [
+      "Conseiller un redémarrage régulier du matériel.",
+      "Reconfigurer le Wi-Fi en optimisant le canal.",
+      "Si possible, limiter le nombre d’appareils ou prioriser via QoS.",
+      "Planifier intervention technique si problème matériel.",
+      "Contacter l’opérateur en cas de saturation externe."
+    ]
+  },
+  disconnection: {
+    description: "Le client subit des coupures fréquentes de sa connexion Internet.",
+    causes: [
+      "Problème de synchronisation avec le réseau opérateur.",
+      "Câblage défectueux (coaxial, Ethernet).",
+      "Firmware obsolète ou corruption du modem/routeur.",
+      "Interférences électromagnétiques.",
+      "Surchauffe ou matériel défectueux."
+    ],
+    steps: [
+      "Vérifier les câbles et connecteurs.",
+      "Redémarrer modem et routeur.",
+      "Mettre à jour le firmware du modem.",
+      "Tester la connexion en filaire et Wi-Fi.",
+      "Vérifier les logs du modem (si accessibles).",
+      "Demander un test de ligne à l’opérateur."
+    ],
+    solutions: [
+      "Remplacer câbles défectueux.",
+      "Réinitialiser le modem aux paramètres usine si nécessaire.",
+      "Remplacer le modem/routeur si matériel défectueux.",
+      "Escalader au support technique avancé."
+    ]
+  },
+  wifiCoverage: {
+    description: "Le client se plaint d’une faible portée ou de zones sans Wi-Fi.",
+    causes: [
+      "Placement inadapté du routeur (obstacles, murs épais).",
+      "Canal Wi-Fi saturé dans la zone.",
+      "Routeur trop ancien ou matériel insuffisant.",
+      "Paramètres Wi-Fi mal configurés (mode, bande).",
+      "Interférences avec d’autres appareils (micro-ondes, babyphone)."
+    ],
+    steps: [
+      "Vérifier l’emplacement du routeur.",
+      "Changer le canal Wi-Fi.",
+      "Tester la couverture avec un outil de diagnostic Wi-Fi.",
+      "Mettre à jour firmware du routeur.",
+      "Proposer un répéteur Wi-Fi ou système mesh si nécessaire."
+    ],
+    solutions: [
+      "Déplacer le routeur dans un endroit plus central.",
+      "Configurer un canal Wi-Fi moins saturé.",
+      "Mettre à jour le matériel ou ajouter un répéteur/mesh.",
+      "Configurer correctement les bandes 2.4 GHz et 5 GHz."
+    ]
+  },
+  webAccess: {
+    description: "Le client ne peut pas accéder à certains sites web spécifiques.",
+    causes: [
+      "Problème DNS ou cache corrompu.",
+      "Blocage par firewall/antivirus ou configuration routeur.",
+      "Restriction du fournisseur d’accès.",
+      "Problème de routage ou filtrage IP.",
+      "Site web temporairement indisponible."
+    ],
+    steps: [
+      "Vider le cache DNS et navigateur.",
+      "Tester l’accès via un autre appareil ou réseau.",
+      "Désactiver temporairement firewall/antivirus.",
+      "Changer de serveur DNS (ex : Google DNS 8.8.8.8).",
+      "Vérifier les règles de filtrage dans le routeur/modem."
+    ],
+    solutions: [
+      "Configurer correctement les DNS sur le modem/PC.",
+      "Mettre à jour firewall/antivirus.",
+      "Escalader si blocage opérateur.",
+      "Informer le client si site indisponible."
+    ]
+  },
+  iptvIssue: {
+    description: "Le client rencontre des problèmes sur son service IPTV (images figées, coupures, pas de signal).",
+    causes: [
+      "Connexion Internet instable ou lente.",
+      "Configuration multicast mal configurée.",
+      "Câblage ou matériel défectueux (set-top box, câble Ethernet).",
+      "Problèmes liés au fournisseur IPTV.",
+      "Interférences réseau ou saturation."
+    ],
+    steps: [
+      "Vérifier la vitesse et stabilité de la connexion.",
+      "Tester la box IPTV sur un autre port LAN.",
+      "Redémarrer la box IPTV et le modem/routeur.",
+      "Vérifier le câblage Ethernet entre box et routeur.",
+      "Contrôler la configuration multicast dans le routeur."
+    ],
+    solutions: [
+      "Remplacer câbles défectueux.",
+      "Mettre à jour firmware box IPTV si possible.",
+      "Configurer correctement multicast/IGMP snooping.",
+      "Contacter le fournisseur IPTV si problème persiste."
+    ]
+  },
+  vpnIssue: {
+    description: "Le client ne parvient pas à établir ou maintenir une connexion VPN stable.",
+    causes: [
+      "Paramètres VPN incorrects ou incompatibles.",
+      "Pare-feu/antivirus bloquant le VPN.",
+      "Problèmes de réseau ou NAT sur le routeur.",
+      "Version obsolète du logiciel VPN.",
+      "Problèmes temporaires du serveur VPN."
+    ],
+    steps: [
+      "Vérifier les paramètres VPN (serveur, protocole, identifiants).",
+      "Désactiver temporairement le pare-feu/antivirus pour tester.",
+      "Tester la connexion VPN sur un autre appareil si possible.",
+      "Vérifier la stabilité de la connexion Internet.",
+      "Mettre à jour le logiciel VPN ou utiliser une autre version."
+    ],
+    solutions: [
+      "Corriger les paramètres VPN.",
+      "Contacter le support VPN si problème persiste.",
+      "Changer de logiciel VPN si incompatibilité détectée.",
+      "Escalader pour assistance technique avancée."
+    ]
+  },
+  voipIssue: {
+    description: "Le client rencontre des problèmes avec son téléphone résidentiel VoIP (absence de tonalité, mauvaise qualité audio, coupures).",
+    causes: [
+      "Connexion Internet instable ou insuffisante.",
+      "Problème de configuration du téléphone IP ou adaptateur.",
+      "Câbles ou matériel défectueux.",
+      "Interférences réseau ou conflit d’adresses IP."
+    ],
+    steps: [
+      "Vérifier que le téléphone est correctement branché et alimenté.",
+      "Redémarrer le modem, routeur et téléphone IP.",
+      "Tester la connexion Internet pour vérifier la stabilité.",
+      "Contrôler les câbles réseau et téléphoniques.",
+      "Vérifier la configuration du téléphone IP (serveur SIP, comptes).",
+      "Tester la qualité audio avec un autre téléphone IP si possible."
+    ],
+    solutions: [
+      "Remplacer câbles ou téléphone défectueux.",
+      "Reconfigurer les paramètres SIP.",
+      "Améliorer la qualité de la connexion Internet.",
+      "Escalader pour intervention technique spécialisée."
+    ]
+  }
+};
 
-      if(!agentName) {
-        alert("Veuillez renseigner le nom de l'agent.");
-        return;
-      }
-      if(!callType) {
-        alert("Veuillez sélectionner le type d'appel.");
-        return;
-      }
-      if(!callDuration || isNaN(callDuration)) {
-        alert("Veuillez saisir une durée valide en secondes.");
-        return;
-      }
-      if(!callOutcome) {
-        alert("Veuillez sélectionner le résultat de l'appel.");
-        return;
-      }
+const routerConfigs = {
+  ac750: 
+    <h3>Configuration TP-Link AC750</h3>
+    <ul>
+      <li>Accès à l’interface : <code>http://192.168.0.1</code> ou <code>http://tplinkwifi.net</code></li>
+      <li>Identifiant/Mot de passe par défaut : <code>admin</code> / <code>admin</code></li>
+      <li>Configurer la connexion WAN (PPPoE, DHCP selon opérateur)</li>
+      <li>Configurer le Wi-Fi : SSID & mot de passe sur 2.4 GHz et 5 GHz</li>
+      <li>Modifier le canal Wi-Fi sous "Wireless Settings" pour réduire les interférences</li>
+      <li>Activer QoS pour prioriser VoIP ou IPTV (si disponible)</li>
+      <li>Penser à sauvegarder la configuration et redémarrer le routeur</li>
+    </ul>
+  ,
+  decoM4: 
+    <h3>Configuration TP-Link Deco M4</h3>
+    <ul>
+      <li>La gestion se fait via l’application mobile Deco</li>
+      <li>Vérifier que la dernière version de l’application est installée</li>
+      <li>Configurer la connexion Internet dans l’app (WAN selon opérateur)</li>
+      <li>Paramétrer le Wi-Fi (nom du réseau, mot de passe)</li>
+      <li>Gérer la priorité QoS dans l’app Deco pour VoIP/IPTV</li>
+      <li>Mettre à jour le firmware depuis l’application</li>
+      <li>Redémarrer les unités Deco si problème détecté</li>
+    </ul>
+  ,
+  ac1200: 
+    <h3>Configuration TP-Link AC1200</h3>
+    <ul>
+      <li>Accès à l’interface : <code>http://192.168.0.1</code> ou <code>http://tplinkwifi.net</code></li>
+      <li>Login par défaut : <code>admin</code> / <code>admin</code></li>
+      <li>Configurer le type de connexion WAN selon FAI (PPPoE, IP statique, DHCP)</li>
+      <li>Configurer le Wi-Fi sur les bandes 2.4 GHz et 5 GHz</li>
+      <li>Changer le canal Wi-Fi pour éviter les conflits</li>
+      <li>Activer QoS et configurer les priorités si nécessaire</li>
+      <li>Faire une sauvegarde de la configuration et redémarrer</li>
+    </ul>
+  
+};
 
-      let report = "--- Rapport d'appel ---\n\n";
-      report += `Agent : ${agentName}\n`;
-      report += `Type d'appel : ${callType === "entrant" ? "Entrant" : callType === "sortant" ? "Sortant" : "Traitement Ticket"}\n`;
-      report += `Durée : ${callDuration} secondes\n`;
-      report += `Résultat : ${callOutcome === "réussi" ? "Réussi" : callOutcome === "nonRéussi" ? "Non réussi" : "Ticket créé"}\n`;
-      if(comments) {
-        report += `Commentaires :\n${comments}\n`;
-      }
+function showRouterConfig() {
+  const model = document.getElementById('routerModel').value;
+  const container = document.getElementById('routerConfig');
+  if(model && routerConfigs[model]){
+    container.style.display = 'block';
+    container.innerHTML = routerConfigs[model];
+  } else {
+    container.style.display = 'none';
+    container.innerHTML = '';
+  }
+}
 
-      // Exemple d’analyse simple :
-      report += "\n--- Analyse rapide ---\n";
-      if(callDuration < 60) {
-        report += "- Appel très court, vérifier la qualité.\n";
-      } else if(callDuration > 600) {
-        report += "- Appel long, possible complexité ou discussion approfondie.\n";
-      } else {
-        report += "- Durée d'appel normale.\n";
-      }
-      if(callOutcome === "nonRéussi") {
-        report += "- Suivi recommandé : recontacter le client.\n";
-      } else if(callOutcome === "ticketCréé") {
-        report += "- Ticket créé, traitement en cours.\n";
-      } else {
-        report += "- Appel traité avec succès.\n";
-      }
+function generateSummary() {
+  const clientName = document.getElementById('clientName').value.trim();
+  const problemKey = document.getElementById('problem').value;
+  const remarks = document.getElementById('remarks').value.trim();
 
-      document.getElementById("result").textContent = report;
-    }
-  </script>
+  if(!problemKey){
+    alert("Veuillez choisir un problème à diagnostiquer.");
+    return;
+  }
+
+  const diag = procedures[problemKey];
+  let text = Client : ${clientName || 'N/A'}\n\n;
+  text += Problème identifié : ${diag.description}\n\n;
+  text += Causes possibles :\n;
+  diag.causes.forEach((cause,i) => {
+    text +=   ${i+1}. ${cause}\n;
+  });
+  text += \nÉtapes de diagnostic :\n;
+  diag.steps.forEach((step,i) => {
+    text +=   ${i+1}. ${step}\n;
+  });
+  text += \nSolutions recommandées :\n;
+  diag.solutions.forEach((sol,i) => {
+    text +=   ${i+1}. ${sol}\n;
+  });
+
+  if(remarks){
+    text += \nRemarques agent :\n  ${remarks}\n;
+  }
+
+  document.getElementById('summary').textContent = text;
+}
+</script>
 
 </body>
 </html>
