@@ -3,33 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Outil de Diagnostic Réseau - Centre d’Appel</title>
+  <title>Script complet Centre d'Appel + Logo Ezitel</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      background: #fafafa;
-      color: #333;
+      background: #f9f9f9;
+      color: #222;
     }
-    h2 {
-      margin-bottom: 15px;
-    }
-    /* Conteneur en flex pour formulaire + logo */
     .container {
       display: flex;
-      align-items: flex-start;
       gap: 40px;
       max-width: 1000px;
-      margin: 0 auto;
+      margin: auto;
       background: #fff;
       padding: 20px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      align-items: flex-start;
     }
-    /* Formulaire prend la place disponible */
-    form {
+    .form-container {
       flex: 1;
-      min-width: 320px;
+      min-width: 300px;
     }
     label {
       display: block;
@@ -40,57 +35,53 @@
       width: 100%;
       padding: 8px;
       margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
       font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
       box-sizing: border-box;
     }
     textarea {
       resize: vertical;
-      height: 100px;
+      min-height: 100px;
     }
     button {
       margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
       background-color: #0078d4;
-      color: white;
       border: none;
-      border-radius: 5px;
+      padding: 12px 20px;
+      color: white;
+      font-size: 16px;
       cursor: pointer;
+      border-radius: 6px;
       transition: background-color 0.3s ease;
     }
     button:hover {
       background-color: #005ea2;
     }
-    /* Zone résumé */
-    #summary {
-      margin-top: 25px;
-      background: #f0f0f0;
+    #result {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background: #eee;
       padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
       max-height: 400px;
       overflow-y: auto;
-      white-space: pre-wrap;
-      border-radius: 5px;
-      font-family: monospace;
-      font-size: 14px;
     }
-    /* Conteneur logo */
     .logo-container {
       flex-shrink: 0;
+      max-width: 180px;
       display: flex;
       align-items: center;
       justify-content: center;
-      max-width: 180px;
     }
     .logo-container img {
       max-width: 150px;
       max-height: 150px;
       object-fit: contain;
-      filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.1));
     }
-    /* Responsive */
-    @media (max-width: 720px) {
+    @media(max-width:720px) {
       .container {
         flex-direction: column;
         align-items: center;
@@ -99,9 +90,8 @@
         margin-top: 30px;
         max-width: 100%;
       }
-      form {
+      .form-container {
         width: 100%;
-        min-width: unset;
       }
     }
   </style>
@@ -109,108 +99,99 @@
 <body>
 
   <div class="container">
-    <!-- Formulaire Diagnostic -->
-    <form id="diagnosticForm" onsubmit="return false;">
-      <h2>Outil de Diagnostic Réseau - Centre d’Appel</h2>
+    <div class="form-container">
+      <h2>Formulaire Diagnostic Centre d'Appel</h2>
+      <form id="callCenterForm" onsubmit="return false;">
+        <label for="agentName">Nom de l'agent :</label>
+        <input type="text" id="agentName" name="agentName" placeholder="Ex: Anass Oukharraz" required />
 
-      <label for="clientName">Nom du client :</label>
-      <input type="text" id="clientName" name="clientName" placeholder="Ex: Mohamed" required />
+        <label for="callType">Type d'appel :</label>
+        <select id="callType" name="callType" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="entrant">Entrant</option>
+          <option value="sortant">Sortant</option>
+          <option value="ticket">Traitement Ticket</option>
+        </select>
 
-      <label for="clientPhone">Téléphone du client :</label>
-      <input type="text" id="clientPhone" name="clientPhone" placeholder="Ex: 0612345678" />
+        <label for="callDuration">Durée de l'appel (en secondes) :</label>
+        <input type="text" id="callDuration" name="callDuration" placeholder="Ex: 180" pattern="^[0-9]+$" required />
 
-      <label for="issueType">Type de problème rencontré :</label>
-      <select id="issueType" name="issueType" required>
-        <option value="">-- Choisir un problème --</option>
-        <option value="internetDown">Pas d’internet</option>
-        <option value="vpnIssue">Problème VPN</option>
-        <option value="voipIssue">Problème téléphone VoIP</option>
-        <option value="slowConnection">Connexion lente</option>
-        <option value="wifiIssue">Problème Wi-Fi</option>
-        <option value="other">Autre</option>
-      </select>
+        <label for="callOutcome">Résultat de l'appel :</label>
+        <select id="callOutcome" name="callOutcome" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="réussi">Réussi</option>
+          <option value="nonRéussi">Non réussi</option>
+          <option value="ticketCréé">Ticket créé</option>
+        </select>
 
-      <label for="issueDetails">Détails complémentaires :</label>
-      <textarea id="issueDetails" name="issueDetails" placeholder="Décrivez le problème, circonstances, etc."></textarea>
+        <label for="comments">Commentaires :</label>
+        <textarea id="comments" name="comments" placeholder="Ajouter des notes ici..."></textarea>
 
-      <label for="urgent">Priorité urgente ?</label>
-      <select id="urgent" name="urgent">
-        <option value="non">Non</option>
-        <option value="oui">Oui</option>
-      </select>
+        <button type="button" onclick="generateReport()">Générer rapport</button>
+      </form>
 
-      <button type="button" onclick="generateSummary()">Générer diagnostic</button>
+      <pre id="result" aria-live="polite" aria-atomic="true"></pre>
+    </div>
 
-      <pre id="summary" aria-live="polite" aria-atomic="true"></pre>
-    </form>
-
-    <!-- Logo Ezitel à droite -->
     <div class="logo-container" aria-label="Logo Ezitel">
       <img src="https://media.licdn.com/dms/image/v2/D4E0BAQHcDy3awgzs0g/company-logo_200_200/company-logo_200_200/0/1704207024109/ezitel_logo?e=2147483647&v=beta&t=B9KTE0UjPwFITsI-vP-wlCFV6JaAoWPSR1IhLJVKHgw" alt="Logo Ezitel" />
     </div>
   </div>
 
-<script>
-  function generateSummary() {
-    const clientName = document.getElementById("clientName").value.trim();
-    const clientPhone = document.getElementById("clientPhone").value.trim();
-    const issueType = document.getElementById("issueType").value;
-    const issueDetails = document.getElementById("issueDetails").value.trim();
-    const urgent = document.getElementById("urgent").value;
+  <script>
+    function generateReport() {
+      const agentName = document.getElementById("agentName").value.trim();
+      const callType = document.getElementById("callType").value;
+      const callDuration = document.getElementById("callDuration").value.trim();
+      const callOutcome = document.getElementById("callOutcome").value;
+      const comments = document.getElementById("comments").value.trim();
 
-    if (!clientName) {
-      alert("Merci de renseigner le nom du client.");
-      return;
+      if(!agentName) {
+        alert("Veuillez renseigner le nom de l'agent.");
+        return;
+      }
+      if(!callType) {
+        alert("Veuillez sélectionner le type d'appel.");
+        return;
+      }
+      if(!callDuration || isNaN(callDuration)) {
+        alert("Veuillez saisir une durée valide en secondes.");
+        return;
+      }
+      if(!callOutcome) {
+        alert("Veuillez sélectionner le résultat de l'appel.");
+        return;
+      }
+
+      let report = "--- Rapport d'appel ---\n\n";
+      report += `Agent : ${agentName}\n`;
+      report += `Type d'appel : ${callType === "entrant" ? "Entrant" : callType === "sortant" ? "Sortant" : "Traitement Ticket"}\n`;
+      report += `Durée : ${callDuration} secondes\n`;
+      report += `Résultat : ${callOutcome === "réussi" ? "Réussi" : callOutcome === "nonRéussi" ? "Non réussi" : "Ticket créé"}\n`;
+      if(comments) {
+        report += `Commentaires :\n${comments}\n`;
+      }
+
+      // Exemple d’analyse simple :
+      report += "\n--- Analyse rapide ---\n";
+      if(callDuration < 60) {
+        report += "- Appel très court, vérifier la qualité.\n";
+      } else if(callDuration > 600) {
+        report += "- Appel long, possible complexité ou discussion approfondie.\n";
+      } else {
+        report += "- Durée d'appel normale.\n";
+      }
+      if(callOutcome === "nonRéussi") {
+        report += "- Suivi recommandé : recontacter le client.\n";
+      } else if(callOutcome === "ticketCréé") {
+        report += "- Ticket créé, traitement en cours.\n";
+      } else {
+        report += "- Appel traité avec succès.\n";
+      }
+
+      document.getElementById("result").textContent = report;
     }
-    if (!issueType) {
-      alert("Merci de sélectionner un type de problème.");
-      return;
-    }
-
-    const issueMap = {
-      internetDown: "Pas d’internet",
-      vpnIssue: "Problème VPN",
-      voipIssue: "Problème téléphone VoIP",
-      slowConnection: "Connexion lente",
-      wifiIssue: "Problème Wi-Fi",
-      other: "Autre problème"
-    };
-
-    let summaryText = `--- Diagnostic Réseau ---\n\n`;
-    summaryText += `Client : ${clientName}\n`;
-    if(clientPhone) summaryText += `Téléphone : ${clientPhone}\n`;
-    summaryText += `Problème signalé : ${issueMap[issueType] || issueType}\n`;
-    if(issueDetails) summaryText += `Détails : ${issueDetails}\n`;
-    summaryText += `Priorité urgente : ${urgent === "oui" ? "Oui" : "Non"}\n\n`;
-
-    summaryText += "Conseils possibles :\n";
-
-    switch(issueType) {
-      case "internetDown":
-        summaryText += "- Vérifier la connexion du modem/routeur.\n- Redémarrer le modem.\n- Vérifier câblage et voyants.\n";
-        break;
-      case "vpnIssue":
-        summaryText += "- Vérifier la configuration VPN.\n- S’assurer que le client a les accès.\n- Relancer le logiciel VPN.\n";
-        break;
-      case "voipIssue":
-        summaryText += "- Vérifier le téléphone IP.\n- Vérifier la configuration réseau.\n- Tester un autre poste si possible.\n";
-        break;
-      case "slowConnection":
-        summaryText += "- Tester la vitesse internet.\n- Vérifier les applications gourmandes en bande passante.\n- Redémarrer les équipements.\n";
-        break;
-      case "wifiIssue":
-        summaryText += "- Tester la couverture Wi-Fi.\n- Redémarrer le routeur.\n- Changer le canal Wi-Fi.\n";
-        break;
-      case "other":
-        summaryText += "- Analyser plus en détail le problème signalé.\n- Demander plus d’infos au client.\n";
-        break;
-      default:
-        summaryText += "- Diagnostique en attente de précisions.\n";
-    }
-
-    document.getElementById("summary").textContent = summaryText;
-  }
-</script>
+  </script>
 
 </body>
 </html>
